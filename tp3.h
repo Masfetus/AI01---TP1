@@ -19,7 +19,8 @@ struct List
 
 void initialize(List** liste);
 void destruct(List** liste);
-
+void insert_end_list(List *liste, char* str);
+int insert_after_position(List** liste, char *str, int p);
 
 
 #endif // TP3_H_INCLUDED

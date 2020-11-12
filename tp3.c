@@ -27,3 +27,23 @@ void destruct(List** list)
         free(*list);
     }
 }
+void insert_end_list(List** list, char* str)
+{
+    if(*list && (*list)->tail)
+    {
+        Element *newElement = (Element*) malloc(sizeof(Element));
+        newElement->data = str;
+        newElement->next = NULL;
+        (*list)->tail = newElement;
+    }
+}
+void insert_after_position(List** list, char* str, int p)
+{
+    if(list && (*list)->tail)
+    {
+        int i = 0;
+        Element* newElement = (Element*) malloc(sizeof(Element));
+        newElement = str;
+        // à finir
+    }
+}
