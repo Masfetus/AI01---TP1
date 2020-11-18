@@ -9,10 +9,10 @@ int main()
     int choice = 0;
     List* listTest = NULL;
     initialize(&listTest);
-    while(choice != 8)
+    while(choice != 8) // Tant que l'utilisateur ne veut pas quitter
     {
-        fflush(stdin);
-        if(!listTest)
+        fflush(stdin); // Nettoyage du flux de donnée entrant
+        if(!listTest) // Si la liste a été détruite (par l'utilisateur) on considère qu'elle n'occupe plus de place en mémoire, il faut donc relancer le programme pour la réinitialiser
         {
             printf("|- La liste a ete detruite, fermeture du programme...\n");
             choice = 8;
@@ -34,30 +34,30 @@ int main()
                 showMenu(&choice);
                 switch(choice)
                 {
-                    case 7:
+                    case 7: // Destruction de la liste => on ne vide pas la liste en la détruisant ! On supprime son espace mémoire
                         destruct(&listTest);
                         listTest = NULL; break;
-                    case 1:
+                    case 1: // Insertion au début de liste
                         inputValidNumber(userInput);
                         insert_begining_list(&listTest, userInput); break;
-                    case 2:
+                    case 2: // Insertion en fin de liste
                         inputValidNumber(userInput);
                         insert_end_list(&listTest, userInput, 0); break;
-                    case 3:
+                    case 3: // Insertion après une position spécifique
                         inputValidNumber(userInput);
                         inputValidNumber(index);
                         insert_after_position(&listTest, userInput, atoi(index)); break;
-                    case 4:
+                    case 4: // Suppression d'un élément
                         inputValidNumber(index);
                         remove_list(&listTest, atoi(index)); break;
-                    case 5: sort(&listTest); break;
-                    case 6: displayList(listTest); break;
-                    default: printf("Pas encore implemente !\n"); break;
+                    case 5: sort_list(&listTest); break; // Tri de la liste
+                    case 6: displayList(listTest); break; // Affichage de la liste
+                    default: printf("Pas encore implemente !\n"); break; // Si jamais un choix est entré et valide mais pas encore développé
                 }
             }
         }
     }
-    if(listTest)
+    if(listTest) // Si la liste n'a pas encore été détruite, alors on libère la mémoire
         destruct(&listTest);
     return 0;
 }
@@ -72,7 +72,7 @@ void inputValidNumber(char* inputDest)
         printf("|- Saisissez un nombre : -|\n");
         scanf("%s", inputDest);
     }
-    while(!isNumeric(inputDest));
+    while(!isNumeric(inputDest)); // Tant que l'utilisateur ne rentre pas un nombre on lui demande d'en rentrer un
 }
 
 void showMenu(int* choice)
@@ -91,5 +91,5 @@ void showMenu(int* choice)
            8 - Quitter\n------------------------------------------------\n");
        scanf("%d", choice);
     }
-    while(*choice < 1 || *choice > 8);
+    while(*choice < 1 || *choice > 8); // Tant que le choix de l'utilisateur est différent de ceux présentés dans le menu, on redemande un choix
 }

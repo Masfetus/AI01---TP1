@@ -5,18 +5,22 @@
 
 Element* getElementAt(List* list, int index)
 {
+    /*
+        Recherche de l'élément à la position index
+        On va parcourir toute la liste à la recherche de l'élément à la fin du "index"-ème nombre
+    */
     Element* result = NULL;
     if(index >= 0 && list != NULL)
     {
         int i = -1;
         result = list->head;
-        while(index != i && result != NULL)
+        while(index != i && result != NULL) // Si on atteint l'indice ou qu'il n'y a plus rien dans la liste à analyser
         {
-            if(strlen(result->data) == 0)
+            if(strlen(result->data) == 0) // On augmente l'indice que si on est passé à un nouveau nombre (que donc on a atterri sur l'élément séparateur)
             {
                 i++;
             }
-            if(i!=index)
+            if(i!=index) // On passe au suivant si on a pas atteint l'objectif
                 result = result->next;
         }
     }
@@ -32,6 +36,12 @@ int isNumeric (const char * s) // Détermine si la chaîne de caractères comporte 
 }
 char** splitNumber(char* str)
 {
+    /*
+        Découpage d'une chaîne de caractères en chaîne de N digits maximum
+        Libération de la mémoire occupée par le résultat nécessaire !! (free (splitNumber)))
+        Ici, on utilisera la fonction native de string.h : strncpy pour prendre les 5 prochains caractères puis on se déplacera de 5 caractères pour reexécuter cette fonction
+    */
+
     char** res = NULL;
     if(str != NULL && strlen(str) > 0)
     {

@@ -27,5 +27,6 @@ int insert_after_position(List** liste, char *str, int p);
 //
 int compare(char* str1, char* str2);
 int remove_list(List** liste, int p);
+void sort_list(List** liste);
 void displayList(List* liste);
 #endif // TP3_H_INCLUDED

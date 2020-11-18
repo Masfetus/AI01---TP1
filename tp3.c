@@ -4,6 +4,7 @@
 
 void initialize (List **list)
 {
+    /* Simple initialisation de la liste, que l'on stocke directement dans la liste passée en paramètre*/
     List* newList = (List*)malloc(sizeof(List));
     newList->head = NULL;
     newList->tail = NULL;
@@ -12,6 +13,8 @@ void initialize (List **list)
 
 void destruct(List** list)
 {
+    /* Pour chaque élément de la liste, on va libérer la mémoire occupée par l'élément.
+        Une fois tous les éléments libérés, on peut libérer la mémoire occupée par la liste elle-même*/
     if(list != NULL)
     {
         Element* ptTemp = (*list)->head;
@@ -26,15 +29,22 @@ void destruct(List** list)
 }
 void insert_end_list(List** list, char* str, int subString)
 {
+    /*
+        Insertion en fin de liste
+        Si str passé en paramètre contient plus de N digits, alors on va découper en nombre de digits <= N et rappeler la fonction pour chacun de ces nombres
+        L'élément séparateur est mis s'il y a eu découpage de la chaîne ou si le nombre à insérer avait un nombre de digits <= N
+
+
+    */
     if(*list)
     {
         if(str && strlen(str) > N) // Pour chaque élément faisant plus de 5 digits, on les décompose puis on rappelle la fonction avec un str plus élémentaire
         {
             char** listOfNumbers = splitNumber(str);
             char** ptList = listOfNumbers;
-            while(ptList && *ptList)
+            while(ptList && *ptList) // Pour chaque maillon récupéré
             {
-                insert_end_list(list, *ptList, 1);
+                insert_end_list(list, *ptList, 1); // On insère l'élément, faisant maintenant 5 digits ou moins
                 ptList++;
             }
             insert_end_list(list, NULL, 1);
@@ -43,11 +53,11 @@ void insert_end_list(List** list, char* str, int subString)
         else
         {
             Element *newElement = (Element*) malloc(sizeof(Element));
-            strcpy(newElement->data, (str ? str : ""));
+            strcpy(newElement->data, (str ? str : "")); // Elémént séparateur représenté par une chaîne vide dans la data
             newElement->next = NULL;
             (*list)->tail->next = newElement;
             (*list)->tail = newElement;
-            if(!subString)
+            if(!subString) // Si on appelle depuis l'extérieur la fonction et que le nombre ne nécessite pas de découpage, alors on lui met directement l'élément séparateur après
                 insert_end_list(list, NULL, 1);
         }
     }
@@ -55,6 +65,12 @@ void insert_end_list(List** list, char* str, int subString)
 
 void insert_begining_list(List** list, char* str)
 {
+    /*
+        Insertion en tête de liste
+        Le premier maillon de 5 digits récupéré est inséré en tête de liste
+        Les autres (s'il y a) sont insérés après cette tête de liste, d'où la nécessité de garder l'élément que l'on a inséré au début
+
+    */
     if(*list && (*list)->head)
     {
         Element* newElement = (Element*) malloc(sizeof(Element)), *previousElement = NULL, * oldHead = (*list)->head;
@@ -67,12 +83,12 @@ void insert_begining_list(List** list, char* str)
         {
             newElement = (Element*) malloc(sizeof(Element));
             strcpy(newElement->data, *ptList);
-            previousElement->next = newElement;
+            previousElement->next = newElement; // On refixe les liens entre eux
             previousElement = newElement;
             ptList++;
         }
         newElement = (Element*) malloc(sizeof(Element));
-        strcpy(newElement->data, "");
+        strcpy(newElement->data, ""); // Insertion élément séparateur à la fin
         newElement->next = oldHead;
         previousElement->next = newElement;
         free(listOfNumbers);
@@ -80,6 +96,11 @@ void insert_begining_list(List** list, char* str)
 }
 void insert_empty_list(List** list, char* str, int subString)
 {
+    /*
+        Insertion dans une liste vide
+        Assez similaire à insert_end_list
+        A ceci près que l'élément qui ne nécessitera pas de division en maillon sera déclaré comme tête et queue de la liste
+    */
     if(*list && !(*list)->head)
     {
         if(str && strlen(str) > N) // Si le nombre est plus grand que N, alors on effectue une décomposition
@@ -103,12 +124,17 @@ void insert_empty_list(List** list, char* str, int subString)
             (*list)->tail = newElement;
             (*list)->head = newElement;
             if(!subString)
-                insert_end_list(list, NULL, 1);
+                insert_end_list(list, NULL, 1); // Insertion élément séparateur
         }
     }
 }
 int insert_after_position(List** list, char* str, int p)
 {
+    /*
+        Insertion après le p-ème nombre
+        La fonction getElementAt récupèrera ici l'élément à partir duquel nous devons insérer (en fonction de l'indice p passé)
+        A partir de cet élément, on fait le même processus que pour insert_begining_list en insérant à la suite de cet élément tous les maillons nécessaires
+    */
     if(list)
     {
         Element* newElement = NULL;
@@ -141,6 +167,11 @@ int insert_after_position(List** list, char* str, int p)
 
 int remove_list(List** list, int p)
 {
+    /*
+        Suppression d'un élément de la liste
+        Ici on va une fois de plus récupérer l'élément à supprimer à partir de son indice, et supprimer en chaîne les maillons qui le succèdent jusqu'au prochain élément
+
+    */
     if(*list)
     {
         Element* firstElement = getElementAt(*list, (p > 0 ? p - 1 : p)); // On récupère l'élément après le p-ème nombre inséré
@@ -156,7 +187,7 @@ int remove_list(List** list, int p)
                 ptElement = memElement;
             }
             memElement = ptElement->next;
-            free(ptElement);
+            free(ptElement); // On libère l'élément séparateur aussi
             ptElement = memElement;
             if(p == 0)
                 (*list)->head = ptElement;
@@ -174,6 +205,11 @@ int remove_list(List** list, int p)
 
 int compare(char* str1, char* str2)
 {
+    /*
+        Comparaison de deux chaînes de caractères représentant des nombres
+        On exclut les cas triviaux si la longueur d'une chaîne est supérieure à une autre.
+        Sinon on compare les caractères de chaque chaîne un à un
+    */
     int res = 0;
     if(strlen(str1) > strlen(str2))
         res = 1;
@@ -198,8 +234,13 @@ int compare(char* str1, char* str2)
     // - 2 : str2 > str1
     return res;
 }
-void sort(List** list)
+void sort_list(List** list)
 {
+    /*
+        Tri de la liste
+        Ce tri est basé sur la recherche du minimum de la sous-liste que l'on insèrera à la fin d'une nouvelle liste.
+        Le minimum récupéré de la liste initiale sera
+    */
     List* res = NULL;
     if(*list && (*list)->head)
     {
@@ -245,14 +286,23 @@ void sort(List** list)
                 insert_empty_list(&res, minimum, 0);
             else
                 insert_end_list(&res, minimum, 0);
-            remove_list(list, indexMinimum);
+            remove_list(list, indexMinimum); // On retire le minimum trouvé de la sous-liste, pour épurer petit à petit cette liste
         }
-        destruct(list);
-        *list = res;
+        destruct(list); // On détruit ce qu'il reste de la liste => rien donc complexité 1 (vu qu'on a retiré tous les éléments un par un)
+        *list = res; // On update le pointeur de la nouvelle liste triée
     }
 }
 void displayList(List* list)
 {
+    /*
+        Affichage de la liste
+        La liste est affichée de la manière suivante :
+        ----------------------------------------
+        78 X 85964 5897 X 23 X 1 X
+        ----------------------------------------
+
+        X représentant l'élément séparant deux nombres, l'espace sépare deux maillons du nombre
+    */
     if(list != NULL && list->head != NULL)
     {
         Element* element = list->head;
