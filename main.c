@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "tp3.h"
+#include "utils.h"
 
 int main()
 {
@@ -13,7 +14,7 @@ int main()
         fflush(stdin);
         if(!listTest)
         {
-            printf("|- La liste a été détruite, fermeture du programme...\n");
+            printf("|- La liste a ete detruite, fermeture du programme...\n");
             choice = 8;
         }
         else
@@ -49,8 +50,9 @@ int main()
                     case 4:
                         inputValidNumber(index);
                         remove_list(&listTest, atoi(index)); break;
+                    case 5: sort(&listTest); break;
                     case 6: displayList(listTest); break;
-                    default: printf("Pas encore implémenté !\n"); break;
+                    default: printf("Pas encore implemente !\n"); break;
                 }
             }
         }
@@ -59,6 +61,9 @@ int main()
         destruct(&listTest);
     return 0;
 }
+//********************************************************************************************************//
+//------------------------ Fonctions de gestion des entrées/sorties utilisateur --------------------------//
+//********************************************************************************************************//
 void inputValidNumber(char* inputDest)
 {
     *inputDest = "";
@@ -69,28 +74,21 @@ void inputValidNumber(char* inputDest)
     }
     while(!isNumeric(inputDest));
 }
-int isNumeric (const char * s)
-{
-    if (s == NULL || *s == '\0' || isspace(*s))
-      return 0;
-    char * p;
-    strtod (s, &p);
-    return *p == '\0';
-}
+
 void showMenu(int* choice)
 {
     int res = 0;
     do
     {
-        printf("\n|- Manipulation de la liste :\n\t\
-                 1 - Ajouter un nombre en début de liste\n\t\
-                   2 - Ajouter un nombre en fin de liste\n\t\
-                   3 - Ajouter un nombre à une certaine position\n\t\
-                   4 - Supprimer un nombre d'une certaine position\n\t\
-                   5 - Trier la liste par ordre croissant\n\t\
-                   6 - Afficher la liste\n\t\
-                   7 - Détruire la liste\n\t\
-                   8 - Quitter\n");
+        printf("\n|- Manipulation de la liste :\n\------------------------------------------------\n\
+           1 - Ajouter un nombre en debut de liste\n\
+           2 - Ajouter un nombre en fin de liste\n\
+           3 - Ajouter un nombre a une certaine position\n\
+           4 - Supprimer un nombre d'une certaine position\n\
+           5 - Trier la liste par ordre croissant\n\
+           6 - Afficher la liste\n\
+           7 - Détruire la liste\n\
+           8 - Quitter\n------------------------------------------------\n");
        scanf("%d", choice);
     }
     while(*choice < 1 || *choice > 8);

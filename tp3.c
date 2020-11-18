@@ -15,7 +15,7 @@ void destruct(List** list)
     if(list != NULL)
     {
         Element* ptTemp = (*list)->head;
-        while(ptTemp != NULL)
+        while(ptTemp != NULL) // Pour chaque élément de la liste
         {
             Element* nextElement = ptTemp->next;
             free(ptTemp);
@@ -28,8 +28,7 @@ void insert_end_list(List** list, char* str, int subString)
 {
     if(*list)
     {
-        printf("Trying to insert %s\n", str);
-        if(str && strlen(str) > N)
+        if(str && strlen(str) > N) // Pour chaque élément faisant plus de 5 digits, on les décompose puis on rappelle la fonction avec un str plus élémentaire
         {
             char** listOfNumbers = splitNumber(str);
             char** ptList = listOfNumbers;
@@ -48,7 +47,6 @@ void insert_end_list(List** list, char* str, int subString)
             newElement->next = NULL;
             (*list)->tail->next = newElement;
             (*list)->tail = newElement;
-            printf(" queue : %s |  tête : %s\n", (*list)->tail->data, (*list)->head->data);
             if(!subString)
                 insert_end_list(list, NULL, 1);
         }
@@ -59,16 +57,13 @@ void insert_begining_list(List** list, char* str)
 {
     if(*list && (*list)->head)
     {
-        Element* newElement = (Element*) malloc(sizeof(Element));
-        Element* previousElement = NULL;
-        Element* oldHead = (*list)->head;
-        char** listOfNumbers = splitNumber(str);
-        char** ptList = listOfNumbers;
+        Element* newElement = (Element*) malloc(sizeof(Element)), *previousElement = NULL, * oldHead = (*list)->head;
+        char** listOfNumbers = splitNumber(str), ** ptList = listOfNumbers;
         strcpy(newElement->data, *ptList);
         newElement->next = (*list)->head->next;
-        previousElement = (*list)->head =  newElement;
+        previousElement = (*list)->head =  newElement; // Insertion du premier digit à la tête de liste
         ptList++;
-        while(ptList && *ptList)
+        while(ptList && *ptList) // Puis Insertion des groupes de 5 digits après la tête
         {
             newElement = (Element*) malloc(sizeof(Element));
             strcpy(newElement->data, *ptList);
@@ -87,13 +82,12 @@ void insert_empty_list(List** list, char* str, int subString)
 {
     if(*list && !(*list)->head)
     {
-        if(str && strlen(str) > N)
+        if(str && strlen(str) > N) // Si le nombre est plus grand que N, alors on effectue une décomposition
         {
-            char** listOfNumbers = splitNumber(str);
-            char** ptList = listOfNumbers;
-            insert_empty_list(list, *ptList, 1);
+            char** listOfNumbers = splitNumber(str), ** ptList = listOfNumbers;
+            insert_empty_list(list, *ptList, 1); // On insère par empty le premier élément
             ptList++;
-            while(ptList && *ptList)
+            while(ptList && *ptList) // Puis il s'agira d'insérer les autres éléments à la fin de la liste
             {
                 insert_end_list(list, *ptList, 1);
                 ptList++;
@@ -101,7 +95,7 @@ void insert_empty_list(List** list, char* str, int subString)
             insert_end_list(list, NULL, 1);
             free(listOfNumbers);
         }
-        else
+        else // S'il s'agit d'un nombre décomposé ou inférieur à N, alors on peut commencer l'insertion
         {
             Element* newElement = (Element*) malloc(sizeof(Element));
             strcpy(newElement->data, str);
@@ -119,13 +113,12 @@ int insert_after_position(List** list, char* str, int p)
     {
         Element* newElement = NULL;
         Element* previousElement = getElementAt(*list, p);
-        printf("Data : %s\n", previousElement->next->data);
         if(previousElement)
         {
             Element* oldSucc = previousElement->next;
             char** listOfNumbers = splitNumber(str);
             char** ptList = listOfNumbers;
-            while(ptList && *ptList)
+            while(ptList && *ptList) // Pour chaque groupe de 5 digits, on l'ajoute
             {
                 newElement = (Element*) malloc(sizeof(Element));
                 strcpy(newElement->data, *ptList);
@@ -134,7 +127,7 @@ int insert_after_position(List** list, char* str, int p)
                 ptList++;
             }
             newElement = (Element*) malloc(sizeof(Element));
-            strcpy(newElement->data, "");
+            strcpy(newElement->data, ""); // On ajoute l'élément séparateur entre deux maillons
             newElement->next = oldSucc;
             if(newElement->next == NULL) // Alors il s'agit de la tête
                 (*list)->tail = newElement;
@@ -145,62 +138,21 @@ int insert_after_position(List** list, char* str, int p)
     }
     return -1;
 }
-Element* getElementAt(List* list, int index)
-{
-    Element* result = NULL;
-    if(index >= 0 && list != NULL)
-    {
-        int i = -1;
-        result = list->head;
-        printf("Recherche : %d\n", index);
-        while(index != i && result != NULL)
-        {
-            if(strlen(result->data) == 0)
-            {
-                i++;
-                printf("Fin de l'elem n°%d\n", i);
-            }
-            if(i!=index)
-                result = result->next;
-        }
-    }
-    return result;
-}
-char** splitNumber(char* str)
-{
-    char** res = NULL;
-    if(str != NULL && strlen(str) > 0)
-    {
-        int nbMaillons = (strlen(str) -1) / N + 1;
-        char** ptMaillon = NULL;
-        char* stringPart = str;
-        ptMaillon = res = (char**) malloc(sizeof(char**) * (nbMaillons + 1)); // Nombre de maillons + élément NULL de la fin
-        for(int i = 0; i < nbMaillons; i++, ptMaillon++)
-        {
-            *ptMaillon = (char*) malloc(sizeof(char) * (N+1));
-            strncpy(*ptMaillon, stringPart, N);
-            if(strlen(stringPart) > N)
-                (*ptMaillon)[N] = '\0';
-            stringPart += N;
-        }
-        *ptMaillon = NULL;
-        ptMaillon = NULL;
-    }
-    return res;
-}
+
 int remove_list(List** list, int p)
 {
     if(*list)
     {
-        Element* firstElement = getElementAt(*list, (p > 0 ? p - 1 : p));
+        Element* firstElement = getElementAt(*list, (p > 0 ? p - 1 : p)); // On récupère l'élément après le p-ème nombre inséré
+        // On Commence à - 1 pour récupérer le prédécesseur et actualiser son next, s'il s'agit de la tête de liste, inutile de commencer à - 1
         if(firstElement)
         {
-            Element* ptElement = (p == 0 ? firstElement : firstElement->next);
+            Element* ptElement = (p == 0 ? firstElement : firstElement->next); // On se repositionne au bon endroit pour débuter la suppression
             Element* memElement = NULL;
-            while(ptElement && strlen(ptElement))
+            while(ptElement && strlen(ptElement)) // Tant que je n'ai pas atteint la case où il y a aucune data (qui sépare deux maillons)
             {
                 memElement = ptElement->next;
-                free(ptElement);
+                free(ptElement); // Je libère la mémoire
                 ptElement = memElement;
             }
             memElement = ptElement->next;
@@ -219,6 +171,7 @@ int remove_list(List** list, int p)
     }
     return -1;
 }
+
 int compare(char* str1, char* str2)
 {
     int res = 0;
@@ -239,7 +192,64 @@ int compare(char* str1, char* str2)
             str2++;
         }
     }
+    // Retourne :
+    // - 0 : Les deux nombres sont égaux
+    // - 1 : str1 > str2
+    // - 2 : str2 > str1
     return res;
+}
+void sort(List** list)
+{
+    List* res = NULL;
+    if(*list && (*list)->head)
+    {
+        initialize(&res);
+        while((*list)->head != NULL) // Tant qu'il reste des éléments dans la liste de départ
+        {
+            int position = 0, indexMinimum = 0;
+            Element* element = (*list)->head;
+            char string[64] = "", minimum[64] = "";
+            while(element && element != (*list)->tail) // On va chercher le minimum de cette sous liste
+            {
+                if(strlen(element->data) > 0)
+                    strcat(string, element->data);
+                else
+                {
+                    if(strlen(minimum) > 0)
+                    {
+                        if(compare(minimum, string) == 1) // string plus petit que minimum alors minimum devient string
+                        {
+                            strcpy(minimum, string);
+                            indexMinimum = position;
+                        }
+                    }
+                    else
+                        strcpy(minimum, string);
+                    strcpy(string, "");
+                    position ++;
+                }
+                element = element->next;
+            }
+            /* Pour le dernier élément de la liste, il faut retester par rapport au minimum car l'élément est null et n'entre pas une dernière fois dans le while*/
+            if(strlen(minimum) > 0)
+            {
+                if(compare(minimum, string) == 1) // string plus petit que minimum alors minimum devient string
+                {
+                    strcpy(minimum, string);
+                    indexMinimum = position;
+                }
+            }
+            else
+                strcpy(minimum, string);
+            if(!res->head) // S'il n'y avait rien dans la liste on insère avec insert_empty sinon on insère à la fin
+                insert_empty_list(&res, minimum, 0);
+            else
+                insert_end_list(&res, minimum, 0);
+            remove_list(list, indexMinimum);
+        }
+        destruct(list);
+        *list = res;
+    }
 }
 void displayList(List* list)
 {
