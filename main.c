@@ -45,6 +45,7 @@ int main()
                         insert_end_list(&listTest, userInput, 0); break;
                     case 3: // Insertion après une position spécifique
                         inputValidNumber(userInput);
+                        printf("|-- Saisie de la position --|\n");
                         inputValidNumber(index);
                         insert_after_position(&listTest, userInput, atoi(index)); break;
                     case 4: // Suppression d'un élément
@@ -55,8 +56,10 @@ int main()
                     default: printf("Pas encore implemente !\n"); break; // Si jamais un choix est entré et valide mais pas encore développé
                 }
             }
+            system("cls"); // On nettoie la console
         }
     }
+    printf("Fermeture du programe...\n");
     if(listTest) // Si la liste n'a pas encore été détruite, alors on libère la mémoire
         destruct(&listTest);
     return 0;
